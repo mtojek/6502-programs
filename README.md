@@ -1,2 +1,2 @@
-# 6502_programs
+# 6502-programs
 Programs written for CPU6502
