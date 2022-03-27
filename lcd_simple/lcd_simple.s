@@ -29,6 +29,9 @@ reset:
   lda #%00000110 ; Increment and shift cursor, don't shift display
   jsr lcd_instruction
 
+  lda #%00000001 ; Clear display
+  jsr lcd_instruction
+
   ; Send characters
   lda #"H"       ; Write data to DDRAM
   jsr print_char
