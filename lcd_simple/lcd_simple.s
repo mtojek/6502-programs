@@ -1,16 +1,97 @@
+PORTB = $6000
+PORTA = $6001
+DDRB = $6002
+DDRA = $6003
+
+E  = %10000000
+RW = %01000000
+RS = %00100000
+
   .org $8000
 
 reset:
-  lda #$ff
-  sta $6002
 
-  lda #$50
-  sta $6000
+  ; Init: define output pins
+  lda #%11111111 ; Set all pins on port B to output
+  sta DDRB
+
+  lda #%11100000 ; Set top 3 pins on port A to output
+  sta DDRA
+
+  ; Send command
+  lda #%00111000 ; Function set: set 8-bit mode, 2-line display; 5x8 font
+  sta PORTB
+
+  lda #0         ; Clear RS/RW/E bits
+  sta PORTA
+  lda #E         ; Set E bit to send an instruction
+  sta PORTA
+  lda #0         ; Clear RS/RW/E bits
+  sta PORTA
+
+  ; Send command
+  lda #%00001110 ; Display on/off: display on, cursor on, blink off
+  sta PORTB
+
+  lda #0         ; Clear RS/RW/E bits
+  sta PORTA
+  lda #E         ; Set E bit to send an instruction
+  sta PORTA
+  lda #0         ; Clear RS/RW/E bits
+  sta PORTA
+
+  ; Send command
+  lda #"H"       ; Write data to DDRAM
+  sta PORTB
+
+  lda #RS        ; Clear RW/E bits
+  sta PORTA
+  lda #(RS | E)  ; Set RS | E bit to send an instruction
+  sta PORTA
+  lda #RS        ; Clear RW/E bits
+  sta PORTA
+
+  lda #"e"       ; Write data to DDRAM
+  sta PORTB
+
+  lda #RS        ; Clear RW/E bits
+  sta PORTA
+  lda #(RS | E)  ; Set RS | E bit to send an instruction
+  sta PORTA
+  lda #RS        ; Clear RW/E bits
+  sta PORTA 
+
+  lda #"l"       ; Write data to DDRAM
+  sta PORTB
+
+  lda #RS        ; Clear RW/E bits
+  sta PORTA
+  lda #(RS | E)  ; Set RS | E bit to send an instruction
+  sta PORTA
+  lda #RS        ; Clear RW/E bits
+  sta PORTA
+
+  lda #"l"       ; Write data to DDRAM
+  sta PORTB
+
+  lda #RS        ; Clear RW/E bits
+  sta PORTA
+  lda #(RS | E)  ; Set RS | E bit to send an instruction
+  sta PORTA
+  lda #RS        ; Clear RW/E bits
+  sta PORTA
+
+  lda #"o"       ; Write data to DDRAM
+  sta PORTB
+
+  lda #RS        ; Clear RW/E bits
+  sta PORTA
+  lda #(RS | E)  ; Set RS | E bit to send an instruction
+  sta PORTA
+  lda #RS        ; Clear RW/E bits
+  sta PORTA
 
 loop:
-  ror 
-  sta $6000
-
   jmp loop
 
   .org $fffc
