@@ -64,6 +64,8 @@ lcd_instruction:
   rts
 
 print_char:
+  pha
+
   sta PORTB
 
   lda #RS        ; Clear RW/E bits
@@ -72,6 +74,8 @@ print_char:
   sta PORTA
   lda #RS        ; Clear RW/E bits
   sta PORTA
+
+  pla
   rts
 
   .org $fffc
