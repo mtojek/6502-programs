@@ -10,6 +10,8 @@ RS = %00100000
   .org $8000
 
 reset:
+  ldx #$ff
+  txs
 
   ; Init: define output pins
   lda #%11111111 ; Set all pins on port B to output
@@ -18,81 +20,59 @@ reset:
   lda #%11100000 ; Set top 3 pins on port A to output
   sta DDRA
 
-  ; Send command
   lda #%00111000 ; Function set: set 8-bit mode, 2-line display; 5x8 font
-  sta PORTB
+  jsr lcd_instruction
 
-  lda #0         ; Clear RS/RW/E bits
-  sta PORTA
-  lda #E         ; Set E bit to send an instruction
-  sta PORTA
-  lda #0         ; Clear RS/RW/E bits
-  sta PORTA
-
-  ; Send command
   lda #%00001110 ; Display on/off: display on, cursor on, blink off
-  sta PORTB
+  jsr lcd_instruction  
 
-  lda #0         ; Clear RS/RW/E bits
-  sta PORTA
-  lda #E         ; Set E bit to send an instruction
-  sta PORTA
-  lda #0         ; Clear RS/RW/E bits
-  sta PORTA
+  lda #%00000110 ; Increment and shift cursor, don't shift display
+  jsr lcd_instruction
 
-  ; Send command
+  ; Send characters
   lda #"H"       ; Write data to DDRAM
-  sta PORTB
-
-  lda #RS        ; Clear RW/E bits
-  sta PORTA
-  lda #(RS | E)  ; Set RS | E bit to send an instruction
-  sta PORTA
-  lda #RS        ; Clear RW/E bits
-  sta PORTA
-
+  jsr print_char
+  
   lda #"e"       ; Write data to DDRAM
-  sta PORTB
-
-  lda #RS        ; Clear RW/E bits
-  sta PORTA
-  lda #(RS | E)  ; Set RS | E bit to send an instruction
-  sta PORTA
-  lda #RS        ; Clear RW/E bits
-  sta PORTA 
+  jsr print_char  
 
   lda #"l"       ; Write data to DDRAM
-  sta PORTB
-
-  lda #RS        ; Clear RW/E bits
-  sta PORTA
-  lda #(RS | E)  ; Set RS | E bit to send an instruction
-  sta PORTA
-  lda #RS        ; Clear RW/E bits
-  sta PORTA
-
-  lda #"l"       ; Write data to DDRAM
-  sta PORTB
-
-  lda #RS        ; Clear RW/E bits
-  sta PORTA
-  lda #(RS | E)  ; Set RS | E bit to send an instruction
-  sta PORTA
-  lda #RS        ; Clear RW/E bits
-  sta PORTA
+  jsr print_char
+  
+  lda #"l"       ; Write data to DDRAMA
+  jsr print_char
 
   lda #"o"       ; Write data to DDRAM
-  sta PORTB
-
-  lda #RS        ; Clear RW/E bits
-  sta PORTA
-  lda #(RS | E)  ; Set RS | E bit to send an instruction
-  sta PORTA
-  lda #RS        ; Clear RW/E bits
-  sta PORTA
+  jsr print_char 
 
 loop:
   jmp loop
+
+lcd_instruction:
+  pha
+
+  sta PORTB
+
+  lda #0         ; Clear RS/RW/E bits
+  sta PORTA
+  lda #E         ; Set E bit to send an instruction
+  sta PORTA
+  lda #0         ; Clear RS/RW/E bits
+  sta PORTA
+
+  pla
+  rts
+
+print_char:
+  sta PORTB
+
+  lda #RS        ; Clear RW/E bits
+  sta PORTA
+  lda #(RS | E)  ; Set RS | E bit to send an instruction
+  sta PORTA
+  lda #RS        ; Clear RW/E bits
+  sta PORTA
+  rts
 
   .org $fffc
   .word reset
