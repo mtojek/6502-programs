@@ -51,8 +51,32 @@ reset:
 loop:
   jmp loop
 
+lcd_wait:
+  pha
+  lda #%00000000 ; Port B is input
+  sta DDRB
+lcdbusy:
+  lda #RW
+  sta PORTA
+  lda #(RW | E)
+  sta PORTA
+  lda PORTB
+
+  and #%10000000
+  bne lcdbusy
+
+  lda #RW
+  sta PORTA
+  lda #%11111111 ; Port B is output
+  sta DDRB
+  
+  pla
+  rts
+
 lcd_instruction:
   pha
+
+  jsr lcd_wait
 
   sta PORTB
 
