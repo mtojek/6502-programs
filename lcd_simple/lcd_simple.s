@@ -33,23 +33,18 @@ reset:
   jsr lcd_instruction
 
   ; Send characters
-  lda #"H"       ; Write data to DDRAM
+  ldx #0
+send_characters:
+  lda message,x
+  beq loop
   jsr print_char
-  
-  lda #"e"       ; Write data to DDRAM
-  jsr print_char  
-
-  lda #"l"       ; Write data to DDRAM
-  jsr print_char
-  
-  lda #"l"       ; Write data to DDRAMA
-  jsr print_char
-
-  lda #"o"       ; Write data to DDRAM
-  jsr print_char 
+  inx
+  jmp send_characters
 
 loop:
   jmp loop
+
+message: .asciiz "github.com/mtojek"
 
 lcd_wait:
   pha
