@@ -20,16 +20,32 @@ reset:
   lda #%11100000 ; Set top 3 pins on port A to output
   sta DDRA
 
+  ; Init: wait for LCD power
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+
+  ; Init: next instructions
+  lda #%00110000 ; Function set 3x
+  jsr lcd_instruction
+  jsr lcd_instruction
+  jsr lcd_instruction
+
   lda #%00111000 ; Function set: set 8-bit mode, 2-line display; 5x8 font
   jsr lcd_instruction
 
   lda #%00001110 ; Display on/off: display on, cursor on, blink off
-  jsr lcd_instruction  
-
-  lda #%00000110 ; Increment and shift cursor, don't shift display
   jsr lcd_instruction
 
   lda #%00000001 ; Clear display
+  jsr lcd_instruction
+
+  lda #%00000110 ; Set entry mode: increment and shift cursor, don't shift display
   jsr lcd_instruction
 
   ; Send characters
