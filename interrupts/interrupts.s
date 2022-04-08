@@ -70,15 +70,6 @@ lcd_instruction:
   lda #E         ; Set E bit to send an instruction
   sta PORTA
   
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-
   lda #0         ; Clear RS/RW/E bits
   sta PORTA
 
