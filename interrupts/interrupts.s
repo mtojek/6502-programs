@@ -27,16 +27,16 @@ reset:
 
   lda #%00001110 ; Display on; cursor on; blink off
   jsr lcd_instruction
-  lda #%00000001 ; Clear display
-  jsr lcd_instruction
+  ;lda #%00000001 ; Clear display
+  ;jsr lcd_instruction
 
   lda #0
   sta counter
   sta counter + 1
 
 loop:
-  lda #%00000010 ; Put cursor at home
-  jsr lcd_instruction
+  ;lda #%00000010 ; Put cursor at home
+  ;jsr lcd_instruction
 
   lda #0
   sta message
@@ -93,6 +93,14 @@ ignore_result:
   bne divide ; branch if value not equal to 0
 
   ldx #0
+print_clicks:
+  lda clicks,x
+  beq print
+  jsr print_char
+  inx
+  jmp print_clicks
+
+  ldx #0
 print:
   lda message,x
   beq loop
@@ -146,7 +154,6 @@ lcd_instruction:
   pha
 
   jsr lcd_wait
-
   sta PORTB
 
   lda #0         ; Clear RS/RW/E bits
@@ -164,7 +171,6 @@ print_char:
   pha
 
   jsr lcd_wait
-
   sta PORTB
 
   lda #RS        ; Clear RW/E bits
@@ -184,6 +190,8 @@ nmi:
   inc counter + 1
 exit_nmi:
   rti
+
+clicks: .asciiz "Clicks: "
 
   .org $fffa
   .word nmi
