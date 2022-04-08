@@ -3,10 +3,10 @@ PORTA = $6001
 DDRB = $6002
 DDRA = $6003
 
-value = $0200 ; 2 bytes
-mod10 = $0202 ; 2 bytes
-message = $0204 ; 6 bytes
-counter = $020a ; 2 bytes
+value = $0300 ; 2 bytes
+mod10 = $0302 ; 2 bytes
+message = $0304 ; 6 bytes
+counter = $030a ; 2 bytes
 
 E  = %10000000
 RW = %01000000
@@ -25,18 +25,16 @@ reset:
   ; Wait until LCD init is done
   jsr lcd_wait
 
-  lda #%00001110 ; Display on; cursor on; blink off
+  lda #%00001100 ; Display on; cursor off; blink off
   jsr lcd_instruction
-  ;lda #%00000001 ; Clear display
-  ;jsr lcd_instruction
 
   lda #0
   sta counter
   sta counter + 1
 
 loop:
-  ;lda #%00000010 ; Put cursor at home
-  ;jsr lcd_instruction
+  lda #%00000010 ; Put cursor at home
+  jsr lcd_instruction
 
   lda #0
   sta message
@@ -95,18 +93,24 @@ ignore_result:
   ldx #0
 print_clicks:
   lda clicks,x
-  beq print
+  beq print_z
   jsr print_char
   inx
   jmp print_clicks
 
+print_z:
   ldx #0
 print:
   lda message,x
-  beq loop
+  beq print_end
   jsr print_char
   inx
   jmp print
+
+print_end:
+  lda #'!'
+  jsr print_char
+  jmp loop
 
 ; Add the character in the A register to the beginning of the 
 ; null-terminated string `message`
