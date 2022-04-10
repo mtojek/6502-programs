@@ -2,6 +2,9 @@ PORTB = $6000
 PORTA = $6001
 DDRB = $6002
 DDRA = $6003
+PCR = $600c
+IFR = $600d
+IER = $600e
 
 value = $0300 ; 2 bytes
 mod10 = $0302 ; 2 bytes
@@ -17,7 +20,16 @@ RS = %00100000
 reset:
   ldx #$ff
   txs
-  cli
+
+  bit PORTA ; Try: clear all interrupt flags
+  bit PORTB
+
+  lda #%01111111 ; Try: disable other interrupts
+  sta IER
+  lda #$82
+  sta IER
+  lda #$00
+  sta PCR
 
   lda #%11100000 ; Set top 3 pins on port A to output
   sta DDRA
@@ -187,12 +199,37 @@ print_char:
   pla
   rts
 
-irq:
 nmi:
+  rti
+
+irq:
+  pha
+  txa
+  pha
+  tya
+  pha
+
   inc counter
-  bne exit_nmi
+  bne exit_irq
   inc counter + 1
-exit_nmi:
+exit_irq:
+  ldy #$ff
+  ldx #$ff
+delay:
+  dex
+  bne delay
+  dey
+  bne delay
+
+  ; TODO read multiple buttons from PORTA
+  bit PORTA ; Read from PORTA to clear the interrupt flag
+
+  pla
+  tay
+  pla
+  tax
+  pla
+
   rti
 
 clicks: .asciiz "Clicks: "
