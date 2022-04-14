@@ -46,9 +46,9 @@ init_timer:
 
 	lda #%01000000
 	sta ACR
-	lda #$76
+	lda #$80
 	sta T1CL
-	lda #$16
+	lda #$00
 	sta T1CH
 	lda #%11000000
 	sta IER
